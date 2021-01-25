@@ -12,3 +12,4 @@ function sigVec = genfmsig(dataX,snr,b,f0,f1)
     phaseVec = f0*dataX + b*cos(2*pi*f1*dataX)/(2*pi);
     sigVec = sin(2*pi*phaseVec);
     sigVec = snr*sigVec/norm(sigVec);
+    
