@@ -43,4 +43,4 @@ subplot(2,1,2);
 plot(timeVec_half,sigVec2, 'Marker', '.', 'Markersize', 24);
 xlabel('time(sec)');
 ylabel('signal value');
-title('Signal with sampling frequency half the maxmimum frequency');
+title(['Signal with sampling frequency ',num2str(samplFreq_half),' Hz']);
