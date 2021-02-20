@@ -33,11 +33,12 @@ nsamples = length(timeVec_half);
 sigVec2 = genfmsig(timeVec_half,A,b,f0,f1);
 
 % Plot both signals
+figure;
 subplot(2,1,1);
 plot(timeVec_5, sigVec1, 'Marker', '.', 'Markersize', 24);
 xlabel('time(sec)');
 ylabel('signal value');
-title('Signal with sampling frequency 5 times maxmimum frequency');
+title(['Signal with sampling frequency ',num2str(samplFreq_5),' Hz']);
 subplot(2,1,2);
 plot(timeVec_half,sigVec2, 'Marker', '.', 'Markersize', 24);
 xlabel('time(sec)');
