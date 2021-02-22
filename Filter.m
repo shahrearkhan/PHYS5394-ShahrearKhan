@@ -30,7 +30,7 @@ fftSig = fftSig(1:kNyq);
 
 % Design low-pass filter for sigVec1
 filtOrdr = 30;
-b1 = fir1(filtOrdr, 150/(samplFreq/2));
+b1 = fir1(filtOrdr, 160/(samplFreq/2));
 % Apply filter
 filtSig1 = fftfilt(b1, sigVec);
 % FFT of signal
@@ -56,7 +56,7 @@ title('Signal from low-pass filter');
 
 % Design band-pass filter for sigVec2
 filtOrdr = 30;
-b2 = fir1(filtOrdr, [190/(samplFreq/2) 250/(samplFreq/2)], 'bandpass');
+b2 = fir1(filtOrdr, [150/(samplFreq/2) 250/(samplFreq/2)], 'bandpass');
 % Apply filter
 filtSig2 = fftfilt(b2, sigVec);
 fftSig2 = fft(filtSig2);
@@ -79,7 +79,7 @@ title('Signal from band-pass filter');
 
 % Design high-pass filter for sigVec3
 filtOrdr = 30;
-b3 = fir1(filtOrdr, 0.59, 'high');
+b3 = fir1(filtOrdr, 250/(samplFreq/2), 'high');
 % Apply filter
 filtSig3 = fftfilt(b3, sigVec);
 fftSig3 = fft(filtSig3);
@@ -127,12 +127,12 @@ ylabel('Absolute value of fft signal');
 title('Periodogram of output signal from band-pass filter');
 
 subplot(2,3,3);
-plot(postFreq, abs(fftSig));
+plot(posFreq, abs(fftSig));
 xlabel('Positive Frequency');
 ylabel('Absolute value of fft signal');
 title('Periodogram of input signal');
 subplot(2,3,6);
-plot(postFreq, abs(fftSig3));
+plot(posFreq, abs(fftSig3));
 xlabel('Positive Frequency');
 ylabel('Absolute value of fft signal');
 title('Periodogram of output signal from high-pass filter');

@@ -1,9 +1,9 @@
 %% Plot the frequency modulated sinusoid and it's periodogram
 %Signal parameters
 A = 10;
-f0 = 30;
-f1 = 5;
-b = 3;
+f0 = 100;
+f1 = 2;
+b = 1;
 
 % Instantaneous frequcncy after 3/20 sec is
 maxFreq = f0 + b*f1;
