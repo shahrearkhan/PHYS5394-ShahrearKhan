@@ -1,6 +1,7 @@
 %% Histograms of uniform and normal probability distribution functions
 
 % Generate uniform pdf
+<<<<<<< HEAD
 u = customrand(-2, 1, 10000);
 u = [u customrand(-2,1)];
 % Generate theoretical uniform pdf
