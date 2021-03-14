@@ -3,6 +3,8 @@
 % Generate uniform pdf
 <<<<<<< HEAD
 u = customrand(-2, 1, 10000);
+u = [];
+>>>>>>> parent of 9442511 (Update testcustomprng.m)
 u = [u customrand(-2,1)];
 % Generate theoretical uniform pdf
 a = 1/(1-(-2));
