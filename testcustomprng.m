@@ -8,6 +8,7 @@ a = 1/(1-(-2));
 u_th = ones(1,10000)*a;
 
 % Generate normal pdf
+<<<<<<< HEAD
 n = customrandn(1.5,2.0,10000);
 =======
 n = [];
