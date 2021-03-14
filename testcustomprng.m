@@ -2,6 +2,7 @@
 
 % Generate uniform pdf
 u = customrand(-2, 1, 10000);
+u = [u customrand(-2,1)];
 % Generate theoretical uniform pdf
 a = 1/(1-(-2));
 u_th = ones(1,10000)*a;
