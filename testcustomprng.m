@@ -1,22 +1,13 @@
 %% Histograms of uniform and normal probability distribution functions
 
 % Generate uniform pdf
-<<<<<<< HEAD
 u = customrand(-2, 1, 10000);
-u = [];
->>>>>>> parent of 9442511 (Update testcustomprng.m)
-u = [u customrand(-2,1)];
 % Generate theoretical uniform pdf
 a = 1/(1-(-2));
 u_th = ones(1,10000)*a;
 
 % Generate normal pdf
-<<<<<<< HEAD
-n = customrandn(1.5,2.0,10000);
-=======
-n = [];
-n = [n customrandn(1.5,2.0)];
->>>>>>> parent of 9442511 (Update testcustomprng.m)
+n = customrandn(2.0,1.5,10000);
 % Generate theoretical normal pdf
 x = -4:0.2:8; % create bins
 n_th = normpdf(x, 2.0, 1.5);
