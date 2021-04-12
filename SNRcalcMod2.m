@@ -21,9 +21,9 @@ f1 = 5;
 b = 3;
 
 % Instantaneous frequcncy after 3/20 sec is
-maxFreq = f0 + b*f1;
-samplFreq = maxFreq*5;
-samplIntrval = 1/samplFreq;
+% maxFreq = f0 + b*f1;
+% samplFreq = maxFreq*5;
+% samplIntrval = 1/samplFreq;
 
 %%
 % Generate the signal that is to be normalized
@@ -31,42 +31,79 @@ samplIntrval = 1/samplFreq;
 sigVec = genfmsig(timeVec,A,b,f0,f1);
 
 %%
-% We will use the noise PSD used in colGaussNoiseDemo.m but add a constant
-% to remove the parts that are zero. (Exercise: Prove that if the noise PSD
-% is zero at some frequencies but the signal added to the noise is not,
-% then one can create a detection statistic with infinite SNR.)
 % Load the LIGO sensitivity data
 data = load('iLIGOSensitivity.txt');
 % Add certain frequencies and corresponding PSD values to the sensitivity
 % data
-y = zeros(length(data)+2, 2);
-y(1, 1) = 0;
-y(1, 2) = data(1, 1);
-ind_1 = find(data(:,1) < 512);
-y(2:length(ind_1)+1, 1) = data(1:length(ind_1), 1);
-y(2:length(ind_1)+1, 2) = data(1:length(ind_1), 2);
-y(length(ind_1)+2, 1) = 512;
-y(length(ind_1)+2, 2) = interp1(data(:, 1), data(:, 2), 512);
-y(length(ind_1)+3:end, 1) = data(length(ind_1)+1:end, 1);
-y(length(ind_1)+3:end, 2) = data(length(ind_1)+1:end, 2);
+% y = zeros(length(data)+2, 2);
+% y(1, 1) = 0;
+% y(1, 2) = data(1, 1);
+% ind_1 = find(data(:,1) < 512);
+% y(2:length(ind_1)+1, 1) = data(1:length(ind_1), 1);
+% y(2:length(ind_1)+1, 2) = data(1:length(ind_1), 2);
+% y(length(ind_1)+2, 1) = 512;
+% y(length(ind_1)+2, 2) = interp1(data(:, 1), data(:, 2), 512);
+% y(length(ind_1)+3:end, 1) = data(length(ind_1)+1:end, 1);
+% y(length(ind_1)+3:end, 2) = data(length(ind_1)+1:end, 2);
+% 
+% noisePSD = y(:,2).^2;
+% freqVec = y(:,1);
 
-noisePSD = y(:,2).^2;
-freqVec = y(:,1);
+%*****************************************************
+% SDM: Review my feedback to you from the last lab.
+fltrOrdr = 100;
+data = [[0,data(1,2)]; data]; %Add zero frequency before interpolation
+fLow = 50;%Hz
+fHigh = 700;%Hz
+%Positive DFT frequencies
+kNyq = floor(nSamples/2)+1;
+posFreq = (0:(kNyq-1))*sampFreq/nSamples;
+%Interpolate
+sensVec = interp1(data(:,1), data(:,2), posFreq);
+
+% Impose band restriction and set PSD outside the band to constants
+indxFcutLo = posFreq < fLow;
+indxFcutHi = posFreq > fHigh;
+sensVec(indxFcutLo) = sensVec(sum(indxFcutLo)+1);
+sensVec(indxFcutHi) = sensVec(kNyq-sum(indxFcutHi));
+
+%PSD
+noisePSD = sensVec.^2;
+%I am redifining psdPosFreq although you only need noisePSD in the rest of
+%the code
+psdPosFreq = noisePSD;
+
+%Generate noise realization
+outNoise = statgaussnoisegen(nSamples,[posFreq(:),noisePSD(:)],fltrOrdr,sampFreq);
+figure;
+[pxx,f]=pwelch(outNoise, 128, [], [], sampFreq);
+loglog(f,pxx);
+hold on;
+loglog(posFreq,noisePSD);
+xlabel('Frequency (Hz)');
+ylabel('PSD ((data unit)^2/Hz)');
+figure;
+plot(timeVec,outNoise);
+
+%****************************************************
+
+
+
 
 %%
 % Generate the PSD vector to be used in the normalization. Should be
 % generated for all positive DFT frequencies. 
-dataLen = nSamples/sampFreq;
-kNyq = floor(nSamples/2)+1;
-posFreq = (0:(kNyq-1))*(1/dataLen);
-% psdPosFreq = zeros(1, length(posFreq));
-% psdPosFreq(1:2) = 0;
-psdPosFreq = interp1(freqVec, noisePSD, posFreq);
-figure;
-loglog(posFreq,psdPosFreq);
-axis([0,posFreq(end),0,max(psdPosFreq)]);
-xlabel('Frequency (Hz)');
-ylabel('PSD ((data unit)^2/Hz)');
+% dataLen = nSamples/sampFreq;
+% kNyq = floor(nSamples/2)+1;
+% posFreq = (0:(kNyq-1))*(1/dataLen);
+% % psdPosFreq = zeros(1, length(posFreq));
+% % psdPosFreq(1:2) = 0;
+% psdPosFreq = interp1(freqVec, noisePSD, posFreq);
+% figure;
+% loglog(posFreq,psdPosFreq);
+% axis([0,posFreq(end),0,max(psdPosFreq)]);
+% xlabel('Frequency (Hz)');
+% ylabel('PSD ((data unit)^2/Hz)');
 
 %% Calculation of the norm
 % Norm of signal squared is inner product of signal with itself
@@ -79,14 +116,20 @@ sigVec = snr*sigVec/sqrt(normSigSqrd);
 nH0Data = 1000;
 llrH0 = zeros(1,nH0Data);
 for lp = 1:nH0Data
+    %noiseVec = statgaussnoisegen(nSamples,[posFreq(:),psdPosFreq(:)],100,sampFreq);
+    %SDM:********************************************
     noiseVec = statgaussnoisegen(nSamples,[posFreq(:),psdPosFreq(:)],100,sampFreq);
+    %************************************************
     llrH0(lp) = innerprodpsd(noiseVec,sigVec,sampFreq,psdPosFreq);
 end
 %Obtain LLR for multiple data (=signal+noise) realizations
 nH1Data = 1000;
 llrH1 = zeros(1,nH1Data);
 for lp = 1:nH0Data
+    %noiseVec = statgaussnoisegen(nSamples,[posFreq(:),psdPosFreq(:)],100,sampFreq);
+    %SDM:********************************************
     noiseVec = statgaussnoisegen(nSamples,[posFreq(:),psdPosFreq(:)],100,sampFreq);
+    %************************************************
     % Add normalized signal
     dataVec = noiseVec + sigVec;
     llrH1(lp) = innerprodpsd(dataVec,sigVec,sampFreq,psdPosFreq);
