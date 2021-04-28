@@ -21,13 +21,14 @@ psoOut = struct('totalFuncEvals',[],...
 for lpruns = 2:nRuns
     psoOut(lpruns) = psoOut(1);
 end
+psoParams = struct('maxSteps',4000);
 parfor lpruns = 1:nRuns
         %Reset random number generator for each worker such that the
         %pseudo-random sequence is different for them but they repeat
         %everytime this code is run
         rng(lpruns);
         %PSO run 
-        psoOut(lpruns) = crcbpso(fitFuncHandle,nDim);
+        psoOut(lpruns) = crcbpso(fitFuncHandle,nDim,psoParams);
 end
 %Find best run
 bestRun = 1;
