@@ -13,6 +13,9 @@ fitVal = zeros(nVecs,1);
 validPts = crcbchkstdsrchrng(xVec);
 %Set fitness for invalid points to infty
 fitVal(~validPts)=inf;
+%SDM************************
+xVec(validPts,:) = s2rv(xVec(validPts,:),params);
+%***************************
 
 for lpc = 1:nVecs
     if validPts(lpc)
@@ -34,7 +37,10 @@ phaseVec = x(1)*params.dataX + x(2)*params.dataXSq + x(3)*params.dataXCb;
 sigVec = sin(2*pi*phaseVec);
 sampFreq = 2048;
 % Template vector using the normsig4psd function
-[templateVec,~] = normsig4psd(sigVec,sampFreq,params.psdVec,params.snr);
+%SDM***********************
+%[templateVec,~] = normsig4psd(sigVec,sampFreq,params.psdVec,params.snr);
+[templateVec,~] = normsig4psd(sigVec,sampFreq,params.psdVec,1);
+%**************************
 % Calculate inner product of data with template
 llr = innerprodpsd(params.dataVec,templateVec,sampFreq,params.psdVec);
 %GLRT is its square
