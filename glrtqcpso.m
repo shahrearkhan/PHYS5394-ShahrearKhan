@@ -66,10 +66,15 @@ for lpruns = 1:nRuns
     [~,qcCoefs] = fHandle(outStruct(lpruns).bestLocation);
     outResults.allRunsOutput(lpruns).qcCoefs = qcCoefs;
     Sig = crcbgenqcsig(inParams.dataX,1,qcCoefs);
-    [templateVec, ~] = normsig4psd(Sig,inParams.sampFreq,inParams.psdVec,inParams.snr);
-    estSig = innerprodpsd(inParams.dataVec,templateVec,inParams.sampFreq,inParams.psdVec);
-    estAmp = inParams.dataVec*estSig(:);
-    estSig = estAmp*estSig;
+    %SDM*********************
+    %[templateVec, ~] = normsig4psd(Sig,inParams.sampFreq,inParams.psdVec,inParams.snr);
+    [templateVec, ~] = normsig4psd(Sig,inParams.sampFreq,inParams.psdVec,1);
+    %estSig = innerprodpsd(inParams.dataVec,templateVec,inParams.sampFreq,inParams.psdVec);
+    estAmp = innerprodpsd(inParams.dataVec,templateVec,inParams.sampFreq,inParams.psdVec);
+    %estAmp = inParams.dataVec*estSig(:);
+    %estSig = estAmp*estSig;
+    estSig = estAmp*templateVec;
+    %************************
     outResults.allRunsOutput(lpruns).estSig = estSig;
     outResults.allRunsOutput(lpruns).totalFuncEvals = outStruct(lpruns).totalFuncEvals;
 end

@@ -28,13 +28,25 @@ rmax = [180, 10, 10];
 
 %% Data realization
 % Design FIR filter with T(f)= target PSD
-fltrOrdr = 300;
-% Generate Output Noise
-outNoise = statgaussnoisegen(nSamples,[posFreq(:), psdVec(:)],fltrOrdr,sampFreq);
+%SDM******************
+%Recall that FIR filtering produces a startup transient. It is too long in
+%your case because the filter order is almost comparable to the segment
+%length.
+%fltrOrdr = 300;
+fltrOrdr = 100;
+% Generate Output Noise: extra samples generated and discarded to remove
+% filter startup transient
+outNoise = statgaussnoisegen(nSamples+fltrOrdr-1,[posFreq(:), psdVec(:)],fltrOrdr,sampFreq);
+outNoise = outNoise(fltrOrdr:end);
+%*********************
 % Signal phase coefficients
 qcCoefs = [a1, a2, a3];
 % Generate Signal Vector
 sigVec = crcbgenqcsig(dataX,snr,qcCoefs);
+%SDM*******************
+% Signal must be normalized according to the provided PSD
+[sigVec,~]=normsig4psd(sigVec,sampFreq,psdVec,snr);
+%**********************
 % Generate Data Realization
 dataVec = outNoise + sigVec;
 % Number of parallel PSO runs
