@@ -1,6 +1,6 @@
-addpath 'D:\Spring 2021\Statistical Methods\Lab 7'
-addpath 'D:\Spring 2021\Statistical Methods\lab 11'
-addpath 'D:\Spring 2021\Statistical Methods\Final 4'
+% addpath 'D:\Spring 2021\Statistical Methods\Lab 7'
+% addpath 'D:\Spring 2021\Statistical Methods\lab 11'
+% addpath 'D:\Spring 2021\Statistical Methods\Final 4'
 
 %% Script to apply PSO to the data realization
 % Load the noise and data realizations
@@ -73,7 +73,14 @@ disp(['Estimated parameters: a1=',num2str(outStruct.bestQcCoefs(1)),...
 qcCoefs = [outStruct.bestQcCoefs(1), outStruct.bestQcCoefs(2), outStruct.bestQcCoefs(3)];
                          
 % GLRT value of the data realization
-glrt = outStruct.allRunsOutput.fitVal;
+%SDM**************************
+%glrt = outStruct.allRunsOutput.fitVal;
+%Use the fitness value from the best PSO run
+glrt = outStruct.bestFitness;
+%Use the negative of this fitness value (PSO used the negative for
+%minimization)
+glrt = -glrt;
+%******************************
 % Likelihood Ratio
 llr = sqrt(glrt);
 
